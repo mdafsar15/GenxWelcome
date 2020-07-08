@@ -1,4 +1,4 @@
-package com.genex.configuration;
+package com.genx.configuration;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
@@ -16,7 +16,7 @@ public class SwaggerConfig {
 	@Bean
 	public Docket productApi() {
 		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("com.genex.controller")).paths(regex("/.*"))
+				.apis(RequestHandlerSelectors.basePackage("com.genx.controller")).paths(regex("/.*"))
 				.build();
 	}
 	
