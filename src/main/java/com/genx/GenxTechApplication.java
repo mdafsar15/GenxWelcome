@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WelcomeGenxApplication {
+public class GenxTechApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(WelcomeGenxApplication.class, args);
+		SpringApplication.run(GenxTechApplication.class, args);
 	}
 
 }
