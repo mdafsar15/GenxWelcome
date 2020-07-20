@@ -1,8 +1,10 @@
 package com.genx.model;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,7 +15,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.Data;
 
@@ -39,16 +44,27 @@ public class User {
 
 	private String age;
 
+	private String mobile;
+
+	@CreationTimestamp
+	private LocalDateTime registeredDate;
+
+	@UpdateTimestamp
+	private LocalDateTime updatedDate;
+
+	@Column(nullable = false)
+	private boolean isVerified;
+
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), 
-	inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
-	//private Role roles;
+	// private Role roles;
 
 	public User() {
 	}
 
-	public User(Long id, String name, String username, String email, String password, String salary, String age) {
+	public User(Long id, String name, String username, String email, String password, String salary, String age,
+			String mobile) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -57,5 +73,6 @@ public class User {
 		this.password = password;
 		this.salary = salary;
 		this.age = age;
+		this.mobile = mobile;
 	}
 }

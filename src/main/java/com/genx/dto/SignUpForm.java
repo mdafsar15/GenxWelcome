@@ -25,5 +25,7 @@ public class SignUpForm {
 	private String salary;
 
 	private String age;
+	
+	private String mobile;
 
 }

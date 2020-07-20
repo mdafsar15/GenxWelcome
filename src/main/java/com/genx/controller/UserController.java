@@ -12,7 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +28,8 @@ import com.genx.response.Response;
 import com.genx.response.SignupResponse;
 import com.genx.service.UserDetailsServiceImpl;
 import com.genx.util.JwtProvider;
+
+import io.swagger.annotations.ApiOperation;
 
 import static com.genx.util.SecurityConstants.EXPIRATION_TIME;
 
@@ -73,11 +77,18 @@ public class UserController {
 		return new ResponseEntity<SignupResponse>(response, HttpStatus.OK);
 
 	}
+	
+	@ApiOperation(value = "To verify registration of user")
 
-	@GetMapping(value = "/getAllNotes")
-	public List<User> getAllUser() {
+	@PutMapping("verification/{token}")
+	public ResponseEntity<SignupResponse> verifyRegistration(@PathVariable("token") String token) {
 
-		List<User> users = userDetailsServiceImpl.getAllUser();
-		return users;
+		if (userRepository.isVerified(token)) {
+			return new ResponseEntity<SignupResponse>(HttpStatus.OK);
+		}
+		return new ResponseEntity<SignupResponse>(HttpStatus.BAD_REQUEST);
+
 	}
+
+	
 }

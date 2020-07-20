@@ -20,6 +20,7 @@ import com.genx.model.RoleName;
 import com.genx.model.User;
 import com.genx.repository.RoleRepository;
 import com.genx.repository.UserRepository;
+import com.genx.repository.UserRepositoryImplementation;
 import com.genx.response.SignupResponse;
 import com.genx.util.JwtProvider;
 
@@ -37,6 +38,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Autowired
 	RoleRepository roleRepository;
+	
+	@Autowired
+	UserRepositoryImplementation userRepositoryImplementation;
 
 	@Override
 	@Transactional
@@ -63,10 +67,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
 			return new SignupResponse("Fail -> Email is already in use!", HttpStatus.BAD_REQUEST);
 		}
+		
+		if (userRepository.existsByMobile(signUpRequest.getMobile())) {
+			return new SignupResponse("Fail -> Mobile Number is already in use!", HttpStatus.BAD_REQUEST);
+		}
 
 		// Creating user's account
 		User user = new User(null, signUpRequest.getName(), signUpRequest.getUsername(), signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()), signUpRequest.getSalary(), signUpRequest.getAge());
+				encoder.encode(signUpRequest.getPassword()), signUpRequest.getSalary(), signUpRequest.getAge(),signUpRequest.getMobile());
 
 		Set<String> strRoles = signUpRequest.getRole();
 		Set<Role> roles = new HashSet<>(); 
@@ -80,15 +88,27 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 				break;
 
+			case "other":
+            	Role otherRole = roleRepository.findByName(RoleName.ROLE_OTHER)
+                .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find."));
+            	roles.add(otherRole);
+            	
+    			break;
+    			
 			default:
 				Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
 						.orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find."));
 				roles.add(userRole);
 			}
 		});
-
+		user.setVerified(false);
 		user.setRoles(roles);
 		userRepository.save(user);
 		return new SignupResponse("User registered successfully!", HttpStatus.ACCEPTED);
+	}
+	
+	public boolean isVerified(String token) {
+		userRepositoryImplementation.verify(jwtProvider.validateJwtToken(token));
+		return true;
 	}
 }
