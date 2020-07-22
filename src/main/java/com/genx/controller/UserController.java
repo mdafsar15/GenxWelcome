@@ -1,10 +1,16 @@
 package com.genx.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.genx.dto.LoginForm;
@@ -59,7 +66,8 @@ public class UserController {
 	JwtProvider j = new JwtProvider();
 
 	@PostMapping("/signin")
-	public ResponseEntity<?> authenticateUser(@RequestBody LoginForm loginRequest) {
+	public ResponseEntity<?> authenticateUser(@RequestBody LoginForm loginRequest, HttpServletRequest request,
+		HttpServletResponse resp) throws IOException {
 
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -67,6 +75,22 @@ public class UserController {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		String jwt = jwtProvider.generateJwtToken(authentication);
+//		user.setStatus(true);
+		//userRepository.save(user);
+		@SuppressWarnings("unchecked")
+		List<String> msgs = (List<String>) request.getAttribute("MY_SESSION_MESSAGES");
+		if (msgs == null) {
+			msgs = new ArrayList<>();
+			 request.getSession().setAttribute("MY_SESSION_MESSAGES", jwt);
+			//resp.sendRedirect(request.getContextPath() + "/");
+		}
+		
+//		String attributeName = request.getParameter("MY_SESSION_MESSAGES");
+//		String attributeValue = request.getParameter("attributeValue");
+//		request.getSession().setAttribute(attributeName, attributeValue);
+//		resp.sendRedirect(request.getContextPath() + "/signin");
+
+		
 		return ResponseEntity.ok(new Response(jwt, "Bearer", EXPIRATION_TIME));
 
 	}
@@ -77,7 +101,7 @@ public class UserController {
 		return new ResponseEntity<SignupResponse>(response, HttpStatus.OK);
 
 	}
-	
+
 	@ApiOperation(value = "To verify registration of user")
 
 	@PutMapping("verification/{token}")
@@ -90,5 +114,4 @@ public class UserController {
 
 	}
 
-	
 }
