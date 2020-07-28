@@ -77,13 +77,13 @@ public class UserController {
 		String jwt = jwtProvider.generateJwtToken(authentication);
 //		user.setStatus(true);
 		//userRepository.save(user);
-		@SuppressWarnings("unchecked")
-		List<String> msgs = (List<String>) request.getAttribute("MY_SESSION_MESSAGES");
-		if (msgs == null) {
-			msgs = new ArrayList<>();
-			 request.getSession().setAttribute("MY_SESSION_MESSAGES", jwt);
+		//@SuppressWarnings("unchecked")
+//		List<String> msgs = (List<String>) request.getAttribute("MY_SESSION_MESSAGES");
+//		if (msgs == null) {
+//			msgs = new ArrayList<>();
+//			 request.getSession().setAttribute("MY_SESSION_MESSAGES", jwt);
 			//resp.sendRedirect(request.getContextPath() + "/");
-		}
+		//}
 		
 //		String attributeName = request.getParameter("MY_SESSION_MESSAGES");
 //		String attributeValue = request.getParameter("attributeValue");
